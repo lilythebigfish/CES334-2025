@@ -1,0 +1,17 @@
+[Unit]
+Description=p5.js HTTP Server + Chromium
+After=graphical.target network.target
+
+[Service]
+Type=simple
+ExecStart=/home/student334/CES334-2025/raspberryPi/vibration/startp5.sh
+WorkingDirectory=/home/student334/CES334-2025/raspberryPi/vibration
+User=student334
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/student334/.Xauthority
+Restart=no
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=graphical.target
