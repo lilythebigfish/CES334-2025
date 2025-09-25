@@ -1,6 +1,6 @@
-**Vibration** is a generative art program co-created by Alicia Deng and Lily Lin. It generates a from made of a grid of circles with dynamically changing colors and shape that grows randomly according to a gaussian distribution. This creates an impression of rhythm, thus the name "vibration". This program runs automatically and indefinitely at reboot in kiosk (full screen), and adapts to every screen size.
+**Vibration** is a generative art program co-created by Alicia Deng and Lily Lin. It generates expanding rings of ellipses from a grid of color-dynamic circles that grows randomly according to a smooth, noise distribution. This creates an impression of rhythm, thus the name "vibration". This program runs automatically and indefinitely at reboot in kiosk (full screen), and adapts to every screen size.
 
-To run this program, download this folder, but move "p5starter.service" into your systemd systems folder (for example, /etc/systemd/system). Make sure you have Firefox installed as a web browser.
+To run this program, download this folder, and move "p5starter.service" into your systemd systems folder (for example, /etc/systemd/system). Make sure you have Firefox installed as a web browser.
 
 In your terminal, run:  
 >sudo systemctl enable p5starter.service  
@@ -22,4 +22,4 @@ If p5starter.service is not included in this chain, manually link the service fi
 
 Then, reboot. The program should now run automatically at reboot, after the graphical interfaces is loaded and network is connected. 
 
-[Here is video of the program running automatically at reboot.](https://vimeo.com/1121262707)
+[Here is video of the program running automatically at reboot.](https://vimeo.com/1122031278)
