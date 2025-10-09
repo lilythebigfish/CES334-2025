@@ -1,5 +1,5 @@
 # Lab Notes (9/25/2025)
-
+(submitting also on behalf of Michael and Eric)
 ## ESP32 Programming: Arduino IDE Setup
 
 You can use almost anything to program the ESP32, but the Arduino IDE is probably easiest for a number of reasons. It is assumed you will be *programming* the boards on your laptops, not the Pi. However, the ESP32 will be interfacing with both, which requires setup on both (potentially.)
