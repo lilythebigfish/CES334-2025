@@ -1,9 +1,8 @@
 ## Module 3: Touch Me, a Graphite Sensor Art Installation
 
-This code works together with a raspberryPi 5, a graphite drawing, bluetooth speakers, and a correctly wired esp32 with a ultrasonic distance sensor and a DIY graphite sensor. 
-When run correctly, it will sense when someone approaches the graphite drawing and calls out "touch me" until the viewer
-the esp32 heart and anywhere on the graphite at the same time. When the viewer releases touch, it will call out "come back to me"
-once before going back to call out "touch me".  
+This code works together with a raspberryPi 5, a graphite drawing, bluetooth speakers, and a correctly wired esp32 with a ultrasonic distance sensor and a DIY graphite sensor. When run correctly, it will sense when someone approaches the graphite drawing and calls out "touch me" until the viewer touch the esp32 heart and anywhere on the graphite at the same time. When the viewer releases touch, it will call out "come back to me" once before going back to call out "touch me". 
+
+[Click here for a demo of the art installation.](https://vimeo.com/1131144394?fl=ip&fe=ec)
 
 To test out your distance sensor and graphite sensor is wired correctly, I have provided two files distanceSensor.ino and 
 graphiteSensor.ino to flash onto your esp32. Once those sensors is confirmed, flash esp32Code.ino on your esp32.  
