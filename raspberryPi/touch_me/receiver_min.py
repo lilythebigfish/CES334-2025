@@ -2,8 +2,8 @@
 import socket, json, time, subprocess, os
 
 PORT = 4210
-TOUCH_LOOP = "/home/student334/CES334-2025/raspberryPi/touch_me/audio/touch_me.mp3"
-COME_BACK  = "/home/student334/CES334-2025/raspberryPi/touch_me/audio/come_back.mp3"
+TOUCH_LOOP = "/home/pi/audio/touch_me.mp3"
+COME_BACK  = "/home/pi/audio/come_back.mp3"
 
 HEARTBEAT_TIMEOUT = 2.0
 POST_RELEASE_DELAY = 1.0
@@ -104,26 +104,26 @@ def main():
                 # --- transitions / decisions (simple & explicit) ---
                 if not new_near:
                     if near != new_near:
-                        print(f"[STATE] -> OUT_OF_RANGE: stopping audio")
+                        print("[STATE] -> OUT_OF_RANGE: stopping audio")
                     kill_player()
                     last_release = 0.0
 
                 else:  # NEAR
                     if new_touch:
                         if touched != new_touch or not finished():
-                            print(f"[STATE] NEAR + TOUCHED: stop immediately")
+                            print("[STATE] NEAR + TOUCHED: stop immediately")
                         kill_player()
                         last_release = 0.0
                     else:
                         # NEAR + NOT TOUCHED: ensure we keep calling
                         if finished():
-                            print(f"[STATE] NEAR + NOT TOUCHED: playing touch loop once")
+                            print("[STATE] NEAR + NOT TOUCHED: playing touch loop once")
                             play_once_async(TOUCH_LOOP)
 
                         # detect release moment (old touched -> new not touched)
                         if touched and not new_touch:
                             last_release = now
-                            print(f"[STATE] touch released: will play come_back in 1s")
+                            print("[STATE] touch released: will play come_back in 1s")
 
                 # commit
                 near, touched = new_near, new_touch
@@ -131,23 +131,23 @@ def main():
             except BlockingIOError:
                 pass
             except Exception as e:
-                print(f"[ERR] bad packet:", e)
+                print("[ERR] bad packet:", e)
 
             # ----- heartbeat timeout -----
             if last_packet and (now - last_packet > HEARTBEAT_TIMEOUT):
                 if not finished():
-                    print(f"[HB] timeout: silencing")
+                    print("[HB] timeout: silencing")
                 kill_player()
 
             # ----- post-release one-shot -----
             if last_release and (now - last_release >= 1.0) and near and not touched:
-                print(f"[STATE] post-release: play come_back once")
+                print("[STATE] post-release: play come_back once")
                 last_release = 0.0
                 kill_player()
                 play_once_blocking(COME_BACK)
                 # then resume call if still near & not touched
                 if near and not touched:
-                    print(f"[STATE] resume calling")
+                    print("[STATE] resume calling")
                     play_once_async(TOUCH_LOOP)
 
             time.sleep(0.03)
