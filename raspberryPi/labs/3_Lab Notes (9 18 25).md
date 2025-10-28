@@ -1,4 +1,4 @@
-# Lab 4
+# Lab 3
 
 ## Wiring
 I wired the joystick like normal, with 3V3 going into the joystick 5V, GND going into GND, and port 25 going into VRX.
