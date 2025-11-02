@@ -2,6 +2,8 @@
 
 # Lab: **Wireless Ambient Light Sensors**
 
+Lily and Murad (submitting on behalf of murad)
+
 **General Description:**
 
 Configure your system to wirelessly send ambient light sensor data from the ESP32 to the Raspberry Pi via TCP or UDP message over Wi-Fi.  Configure your Pi to visualize or sonify the data in some 1:1 way (terminal output or printing values 🔥**DOES NOT COUNT**🔥)
@@ -61,6 +63,50 @@ void loop(){}
 
 ^code for setting up wifi
 
+## Working Code
+
+```python
+#include <WiFi.h>
+
+const char* ssid = "yale wireless";
+const char* password = "";
+const int sensorPin = 33;
+const int ledPin = 26;
+int lightInit;  
+int lightVal;  
+
+void setup(){
+    Serial.begin(115200);
+    delay(1000);
+
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(ssid, password);
+    Serial.println("\nConnecting");
+
+    while(WiFi.status() != WL_CONNECTED){
+        Serial.print(".");
+        delay(100);
+    }
+
+    Serial.println("\nConnected to the WiFi network");
+    Serial.print("Local ESP32 IP: ");
+    Serial.println(WiFi.localIP());
+
+    pinMode(ledPin, OUTPUT);
+    lightInit = analogRead(sensorPin);
+}
+
+void loop(){
+  lightVal = analogRead(sensorPin);
+  Serial.print("Sensor value: ");
+  Serial.println(lightVal);
+  if(lightVal - lightInit <  50)
+  {
+      digitalWrite (ledPin, HIGH); // turn on light
+  }
+}
+```
+
 ## Required components:
 
 1. IP address of ESP32 and Pi (or laptop)
@@ -84,6 +130,8 @@ Need to connect to ADC input to receive analog input.
 Can’t use ADC2 if wifi is on, can only use ADC1
 
 However, this particular board I’m using has power and ADC1 on opposite sides, but i can’t access both sides of the ESP32 at once. Therefore, I’m stuck at the wiring stage…
+
+We figured out the wiring, now we are setting up UDP with the calls the python code that will play jingle bells.
 
 ## Regarding the piezo (touch sensor) [NOT PART OF LAB]
 
@@ -117,7 +165,11 @@ Serial.println(WiFi.macAddress());
 delay(500);
 
 }
+
+//NEW MAC ADDRESS 38:18:2B:89:F5:C8
 ```
+
+In the AKW, we registered mac address with the new esp32. We got into the issue of connecting to the WiFi. We changed the esp32, and the board is not found. 
 
 # **Technical Notes:**
 
