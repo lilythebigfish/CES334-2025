@@ -1,15 +1,13 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 
-const char* ssid      = "yale wireless"; // WPA2-Enterprise/captive portals won't work
-const char* password  = "";
+const char* ssid      = "yale wireless"; 
 
-const int sensorPin   = 33;   // ADC1 pin
-const int ledPin      = 26;   // onboard LED or external LED (LOW=off, HIGH=on)
+const int sensorPin   = 33;   
+const int ledPin      = 26;  
 
-const char* remoteIp  = "192.168.1.123"; // <-- laptop IP (same LAN)
-const uint16_t remotePort = 4210;        // receiver port
-
+const char* remoteIp  = "192.168.1.123"; 
+const uint16_t remotePort = 4210;        
 WiFiUDP udp;
 
 int lightInit = 0;
@@ -40,17 +38,14 @@ void setup() {
 }
 
 void loop() {
-  // read + simple smoothing
   const int N = 8;
   uint32_t acc = 0;
   for (int i = 0; i < N; i++) { acc += analogRead(sensorPin); delayMicroseconds(200); }
-  int lightVal = acc / N;               // 0..4095
+  int lightVal = acc / N;           
 
-  // LED logic (your original threshold)
   if (lightVal - lightInit < 50) digitalWrite(ledPin, HIGH);
   else                           digitalWrite(ledPin, LOW);
 
-  // send UDP as a single ASCII line: "<value>\n"
   if (WiFi.status() == WL_CONNECTED) {
     udp.beginPacket(remoteIp, remotePort);
     udp.printf("%d\n", lightVal);
