@@ -3,4 +3,4 @@
 #!/bin/bash
 
 echo "Launching Firefox with GIF..."  
-firefox --kiosk /home/student334/CES334-2025/raspberryPi/sleigh/cute.gif
+firefox --kiosk /home/student334/CES334-2025/raspberryPi/sleigh/sleigh_display.gif
