@@ -2,13 +2,14 @@
 import socket, json, time, subprocess, os
 
 PORT = 4210
+# my audio file paths
 TOUCH_LOOP = "/home/student334/CES334-2025/raspberryPi/touch_me/audio/touch_me.mp3"
 COME_BACK  = "/home/student334/CES334-2025/raspberryPi/touch_me/audio/come_back.mp3"
 
 HEARTBEAT_TIMEOUT = 2.0
 POST_RELEASE_DELAY = 1.0
 
-# ---------- utilities ----------
+# utilities
 def coerce_bool(v, keyname):
     """Interpret 1/0, True/False, or '1'/'0' strings safely."""
     if isinstance(v, bool):
@@ -24,6 +25,7 @@ def coerce_bool(v, keyname):
 
 player = None
 
+# stops the audio
 def kill_player():
     global player
     if player and player.poll() is None:
@@ -33,6 +35,7 @@ def kill_player():
         except subprocess.TimeoutExpired: player.kill()
     player = None
 
+# plays the audio with VLC, cuts off any existining audio, meant for the touch me audio
 def play_once_async(path):
     global player
     if not os.path.exists(path):
@@ -45,6 +48,7 @@ def play_once_async(path):
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
 
+# plays the full audio file before stopping, meant for the one time come back audio
 def play_once_blocking(path):
     if not os.path.exists(path):
         print(f"[AUDIO][WARN] missing file: {path}")
@@ -59,19 +63,21 @@ def finished():
     """True if no player running."""
     return (player is None) or (player.poll() is not None)
 
-# ---------- state ----------
+# states
 near = False
 touched = False
 last_release = 0.0
 last_packet = 0.0
 
+#main loop
 def main():
     global near, touched, last_release, last_packet
 
     for p in (TOUCH_LOOP, COME_BACK):
         if not os.path.exists(p):
             print(f"[WARN] File not found: {p}")
-
+    
+    #set up to listen for communication from esp32
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind(("", PORT))
     sock.setblocking(False)
@@ -81,7 +87,7 @@ def main():
         while True:
             now = time.time()
 
-            # ----- receive -----
+            # receive udp package from esp32
             try:
                 data, addr = sock.recvfrom(1024)
                 last_packet = now
@@ -101,7 +107,9 @@ def main():
                 # Log interpreted values
                 print(f"[PARSE] near={int(new_near)} touch={int(new_touch)} cm={cm}")
 
-                # --- transitions / decisions (simple & explicit) ---
+                # decisions to play audio depending on the received states
+
+                #don't play anything if not near
                 if not new_near:
                     if near != new_near:
                         print(f"[STATE] -> OUT_OF_RANGE: stopping audio")
@@ -120,7 +128,7 @@ def main():
                             print(f"[STATE] NEAR + NOT TOUCHED: playing touch loop once")
                             play_once_async(TOUCH_LOOP)
 
-                        # detect release moment (old touched -> new not touched)
+                        # detect release moment, play come back
                         if touched and not new_touch:
                             last_release = now
                             print(f"[STATE] touch released: will play come_back in 1s")
@@ -133,13 +141,13 @@ def main():
             except Exception as e:
                 print(f"[ERR] bad packet:", e)
 
-            # ----- heartbeat timeout -----
+            # heartbeat timeout- stop audio if loose esp32 connection
             if last_packet and (now - last_packet > HEARTBEAT_TIMEOUT):
                 if not finished():
                     print(f"[HB] timeout: silencing")
                 kill_player()
 
-            # ----- post-release one-shot -----
+            # post-release play come back audio once
             if last_release and (now - last_release >= 1.0) and near and not touched:
                 print(f"[STATE] post-release: play come_back once")
                 last_release = 0.0
@@ -156,6 +164,7 @@ def main():
     finally:
         kill_player()
 
+# make sure VLC is installed to use player to play audio!
 if __name__ == "__main__":
     print("[INFO] Ensure VLC installed: sudo apt update && sudo apt install -y vlc")
     main()
